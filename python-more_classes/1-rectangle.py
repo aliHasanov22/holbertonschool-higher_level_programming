@@ -13,8 +13,8 @@ class Rectangle:
         Note: We use the setters by calling self.width and self.height
         to ensure the validation logic is applied.
         """
-        self.__width = width
-        self.__height = height
+        self.width = width
+        self.height = height
 
     @property
     def width(self):

@@ -16,7 +16,11 @@ class Rectangle(BaseGeometry):
 
     def __str__(self):
         """This is document"""
-        return "[{}] {}/{}".format(__class__.__name__, self.__width, self.__height)
+        return "[{}] {}/{}".format(
+             __class__.__name__,
+             self.__width,
+             self.__height
+             )
 
     def area(self):
         """This is Document"""

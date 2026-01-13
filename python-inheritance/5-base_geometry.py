@@ -3,5 +3,5 @@
 
 
 class BaseGeometry:
-    """Python""" 
+    """Python"""
     pass

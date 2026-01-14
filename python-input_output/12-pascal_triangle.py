@@ -1,20 +1,25 @@
-#!/usr/bin/python3
-"""Return a list of lists representing Pascal's triangle of n rows."""
+from typing import List
 
-
-def pascal_triangle(n):
-    """Generate Pascal's triangle of n rows as a list of lists."""
-    if n <= 0:
+def build_pascal_triangle(limit: int) -> List[List[int]]:
+    """
+    Constructs Pascal's triangle up to 'limit' rows.
+    """
+    if limit <= 0:
         return []
 
-    triangle = [[1]]  # first row
+    # Initialize with the tip of the triangle
+    rows = [[1]]
 
-    for i in range(1, n):
-        prev_row = triangle[i - 1]
-        row = [1]  # first element
-        for j in range(1, i):
-            row.append(prev_row[j - 1] + prev_row[j])  # sum of two above
-        row.append(1)  # last element
-        triangle.append(row)
+    while len(rows) < limit:
+        last_row = rows[-1]
+        next_row = [1] # Start with 1
+        
+        # Calculate the middle elements
+        for i in range(len(last_row) - 1):
+            current_sum = last_row[i] + last_row[i + 1]
+            next_row.append(current_sum)
+            
+        next_row.append(1) # End with 1
+        rows.append(next_row)
 
-    return triangle
+    return rows

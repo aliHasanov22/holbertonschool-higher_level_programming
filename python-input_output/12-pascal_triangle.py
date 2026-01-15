@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+"""pyhton doc"""
+
+
 def pascal_triangle(n):
     """
     Returns a list of lists representing Pascal's triangle of n.
@@ -22,7 +25,6 @@ def pascal_triangle(n):
 
         # End each row with 1
         row.append(1)
-        
         # Add the completed row to our triangle
         triangle.append(row)
 

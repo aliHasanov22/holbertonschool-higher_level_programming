@@ -1,3 +1,3 @@
 -- FIND OUT the avarage
-SELECT AVG(SCORE)
+SELECT AVG(score)
 FROM second_table;

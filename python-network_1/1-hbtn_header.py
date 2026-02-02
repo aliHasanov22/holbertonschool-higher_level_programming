@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# get link from user
+"""get link from user"""
 import sys
 import urllib.request
 

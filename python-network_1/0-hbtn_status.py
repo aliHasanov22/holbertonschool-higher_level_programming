@@ -1,8 +1,12 @@
 #!/usr/bin/python3
-from urllib.request import urlopen
-# pyhton fetches file
+import urllib.request
 
+url = "https://intranet.hbtn.io/status"
 
-with urlopen("https://intranet.hbtn.io/status") as response:
+with urllib.request.urlopen(url) as response:
     body = response.read()
-print(body)
+
+print("Body response:")
+print("\t- type:", type(body))
+print("\t- content:", body)
+print("\t- utf8 content:", body.decode("utf-8"))

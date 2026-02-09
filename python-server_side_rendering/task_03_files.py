@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 """flask application for displaying products from JSON or CSV files"""
-from itertools import product
-from json import JSONDecodeError
 
 from flask import Flask, render_template, request
 import json
@@ -21,7 +19,7 @@ def read_csv():
     products = []
     try:
         with open('products.csv', 'r') as file:
-            reader = csv.reader(file)
+            reader = csv.DictReader(file)
             for x in reader:
                 x['id'] = int(x['id'])
                 x['price'] = float(x['price'])

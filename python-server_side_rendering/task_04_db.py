@@ -1,32 +1,104 @@
 #!/usr/bin/python3
-""" data display with sqllite in flask"""
+"""Flask Application for displaying products from JSON or CSV files"""
+from flask import Flask, render_template, request
+import json
+import csv
 import sqlite3
 
+app = Flask(__name__)
 
-def create_database():
-    """ create a database connection to the SQLite database"""
+
+def read_json_data():
+    """Read product data from JSON file"""
+    try:
+        with open('products.json', 'r') as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+def read_csv_data():
+    """Read product data from CSV file"""
+    products = []
+    try:
+        with open('products.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                # Convert id to int and price to float for consistency
+                row['id'] = int(row['id'])
+                row['price'] = float(row['price'])
+                products.append(row)
+    except (FileNotFoundError, ValueError, KeyError):
+        return []
+    return products
+def read_sqlite_data():
+    """Read product data from SQLite file"""
+    products = []
     try:
         conn = sqlite3.connect('products.db')
         cursor = conn.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, category TEXT NOT NULL, price REAL NOT NULL)''')
-
-        cursor.execute('DELETE FROM products')
-
-        data =[(1, "laptop", "electronic", 1200),
-               (2, "coffe mug", "home goods",9.88),
-               (3, "USB","electronic",29.99),
-               (4, "Wireless Mouse", "Electronics", 25.50),
-               (5, "Water Bottle", "Home Goods", 15.00),
-               (6, "Monitor", "Electronics", 250.00),
-               (7, "Notebook", "Stationery", 4.50)
-               ]
-
-        cursor.executemany('''INSERT INTO products(id, name, category, price) VALUES (?,?,?,?)''', data)
-        conn.commit()
+        cursor.execute('SELECT id, name, category, price FROM products')
+        rows = cursor.fetchall()
+        for row in rows:
+            product ={
+                'id': row[0],
+                'name': row[1],
+                'category': row[2],
+                'price': float(row[3]),
+            }
+            products.append(product)
         conn.close()
-        print("Database created successfully with 7 products")
-    except sqlite3.Error as e:
-        print("Database error: {}".format(e))
+    except sqlite3.Error:
+        return []
+    return products
+
+@app.route('/products')
+def display_products():
+    """Display products from JSON or CSV file with optional id filter"""
+    # Get query parameters
+    source = request.args.get('source', '').lower()
+    product_id = request.args.get('id')
+
+    # Initialize variables
+    products = []
+    error = None
+    filtered_products = []
+
+    # Read data based on source parameter
+    if source == 'json':
+        products = read_json_data()
+    elif source == 'csv':
+        products = read_csv_data()
+    elif source == 'sql':
+        products = read_sqlite_data()
+    else:
+        error = "Wrong source"
+        return render_template('product_display.html',
+                               error=error,
+                               products=[],
+                               source=source)
+
+    # Filter by id if provided
+    if product_id:
+        try:
+            product_id = int(product_id)
+            for product in products:
+                if product.get('id') == product_id:
+                    filtered_products = [product]
+                    break
+            if not filtered_products:
+                error = "Product not found"
+        except ValueError:
+            error = "Invalid product ID"
+    else:
+        filtered_products = products
+
+    # Pass data to template
+    return render_template('product_display.html',
+                           error=error,
+                           products=filtered_products,
+                           source=source)
+
 
 if __name__ == '__main__':
-    create_database()
+    app.run(debug=True, port=5000)

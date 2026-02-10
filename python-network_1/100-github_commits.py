@@ -19,6 +19,6 @@ if __name__ == "__main__":
             author_name = c["author"]["login"]
         else:
             author_name = (c.get("commit", {})
-                             .get("author", {})
-                             .get("name", ""))
+                            .get("author", {})
+                            .get("name", ""))
         print(f"{sha}: {author_name}")
